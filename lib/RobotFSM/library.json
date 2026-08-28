@@ -1,0 +1,7 @@
+{
+  "name": "RobotFSM",
+  "version": "0.1.0",
+  "description": "Top-level mission state machine tying together Section A, bridge crossing, Section B, and shortest-path replay.",
+  "frameworks": "arduino",
+  "platforms": "atmelavr"
+}

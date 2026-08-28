@@ -1,0 +1,7 @@
+{
+  "name": "Navigator",
+  "version": "0.1.0",
+  "description": "Movement primitives + DFS exploration + shortest-path run, built on MotorDriver/Encoder/UltrasonicSensor/MazeMapper.",
+  "frameworks": "arduino",
+  "platforms": "atmelavr"
+}

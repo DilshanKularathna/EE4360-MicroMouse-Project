@@ -1,0 +1,7 @@
+{
+  "name": "MotorDriver",
+  "version": "0.1.0",
+  "description": "H-bridge motor driver wrapper (speed + direction control per side).",
+  "frameworks": "arduino",
+  "platforms": "atmelavr"
+}

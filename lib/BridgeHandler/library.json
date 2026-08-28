@@ -1,0 +1,7 @@
+{
+  "name": "BridgeHandler",
+  "version": "0.1.0",
+  "description": "Line-following control across the bridge ramp and post-entry corridor.",
+  "frameworks": "arduino",
+  "platforms": "atmelavr"
+}
