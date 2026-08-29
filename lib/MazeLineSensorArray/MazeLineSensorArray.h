@@ -27,10 +27,10 @@ public:
     void readAll();
 
     // Weighted line position: -100 (line fully to the left) .. +100 (fully
-    // right), 0 = centered. Returns 0 if no sensor currently sees black
-    // (line lost) -- callers should track "last known side" separately if
-    // they need lost-line recovery behavior.
-    int16_t getLineError() const;
+    // right), 0 = centered.  When the line is temporarily lost, returns the
+    // last non-zero-side error so the bridge controller gently searches back
+    // toward it instead of blindly driving straight through a bend.
+    int16_t getLineError();
 
     bool isBlack(uint8_t index) const;
     bool allBlack() const;
@@ -51,4 +51,5 @@ public:
 private:
     int _raw[LINE_SENSOR_COUNT];
     bool _black[LINE_SENSOR_COUNT];
+    int16_t _lastLineError = 0;
 };

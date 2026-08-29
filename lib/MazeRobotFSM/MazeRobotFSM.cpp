@@ -107,13 +107,16 @@ void MazeRobotFSM::exploreCourse() {
         return;
     }
 
-    // The Section-B DFS has also returned to its entry/start cell.  Run its
-    // discovered shortest path to FINISH, then retain both maps for a faster
-    // complete attempt after a reset.
+    // The Section-B DFS has also returned to its entry/start cell.  Both maps
+    // are now complete, so checkpoint them before the final physical pass.
+    // A reset after a late motor/sensor failure can still use the learned
+    // route rather than discarding a successful exploration.
+    _store.save(_mazeA, _goalAX, _goalAY, _mazeB, _goalBX, _goalBY);
+
+    // Run the discovered shortest path to FINISH.
     setState(RobotState::SECTION_B_SPEED_RUN);
     _navigator.runShortestPath(_mazeB, START_B_X, START_B_Y, START_B_HEADING, _goalBX, _goalBY);
 
-    _store.save(_mazeA, _goalAX, _goalAY, _mazeB, _goalBX, _goalBY);
     setState(RobotState::FINISHED);
     _navigator.stopMotors();
 }

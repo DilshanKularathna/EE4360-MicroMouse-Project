@@ -104,6 +104,13 @@ static const uint8_t LINE_SENSOR_PINS[LINE_SENSOR_COUNT] = {A8, A9, A10, A11, A1
 #define HEADING_KD   0.8f
 #define HEADING_TOLERANCE_DEG   2.0f
 
+// Small lateral-centering correction when both side sensors see corridor
+// walls.  This supplements gyro heading-hold; tune it only after the basic
+// straight-drive PID is stable.
+#define WALL_CENTER_KP                 2.0f
+#define WALL_CENTER_MAX_CORRECTION     25.0f
+#define WALL_CENTER_SAMPLE_INTERVAL_MS 50UL
+
 // Line-following PID (used only while crossing the bridge / line corridor)
 #define LINE_KP   0.09f
 #define LINE_KI   0.0f
@@ -111,3 +118,5 @@ static const uint8_t LINE_SENSOR_PINS[LINE_SENSOR_COUNT] = {A8, A9, A10, A11, A1
 
 // Safety cap so a bug can't spin the exploration loop forever
 #define MAX_EXPLORE_STEPS   400
+#define GOAL_CONFIRM_SAMPLES 3
+#define GOAL_CONFIRM_SAMPLE_DELAY_MS 5

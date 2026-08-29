@@ -18,8 +18,8 @@ public:
     bool load(MazeMapper &mazeA, uint8_t &goalAX, uint8_t &goalAY,
               MazeMapper &mazeB, uint8_t &goalBX, uint8_t &goalBY) const;
 
-    // Called only after the robot reaches FINISH, so a failed/partial
-    // exploration can never become a speed-run route.
+    // Called once both section maps and their goals are complete.  This is a
+    // safe checkpoint even if the final physical speed pass later fails.
     void save(const MazeMapper &mazeA, uint8_t goalAX, uint8_t goalAY,
               const MazeMapper &mazeB, uint8_t goalBX, uint8_t goalBY) const;
 

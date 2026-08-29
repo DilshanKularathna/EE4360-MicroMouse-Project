@@ -6,6 +6,7 @@ void MazeLineSensorArray::begin() {
         _raw[i] = 0;
         _black[i] = false;
     }
+    _lastLineError = 0;
 }
 
 void MazeLineSensorArray::readAll() {
@@ -30,7 +31,7 @@ bool MazeLineSensorArray::allWhite() const {
     return true;
 }
 
-int16_t MazeLineSensorArray::getLineError() const {
+int16_t MazeLineSensorArray::getLineError() {
     // Symmetric weights spanning roughly the sensor array width, e.g. for
     // 8 sensors: -350,-250,-150,-50,50,150,250,350.
     int32_t weightedSum = 0;
@@ -44,8 +45,13 @@ int16_t MazeLineSensorArray::getLineError() const {
         }
     }
 
-    if (blackCount == 0) return 0; // line lost -- caller decides recovery behavior
-    return static_cast<int16_t>(weightedSum / blackCount);
+    if (blackCount == 0) return _lastLineError;
+
+    int16_t error = static_cast<int16_t>(weightedSum / blackCount);
+    // Keep the last meaningful direction.  A perfectly centred line is not
+    // useful as a recovery direction after the robot enters a bend.
+    if (error != 0) _lastLineError = error;
+    return error;
 }
 
 bool MazeLineSensorArray::detectApproachMarker() const {

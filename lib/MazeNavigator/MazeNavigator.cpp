@@ -43,6 +43,19 @@ Heading directionBetween(Cell from, Cell to) {
     return Heading::WEST;
 }
 
+bool isGoalConfirmed(MazeLineSensorArray &lineSensors, GoalDetectorFn isGoalDetected) {
+    // The first detection has already sampled the array.  Require a short,
+    // consecutive confirmation window before committing a map goal, which
+    // rejects floor seams and isolated noisy readings without slowing normal
+    // exploration.
+    if (!isGoalDetected(lineSensors)) return false;
+    for (uint8_t i = 1; i < GOAL_CONFIRM_SAMPLES; i++) {
+        delay(GOAL_CONFIRM_SAMPLE_DELAY_MS);
+        if (!isGoalDetected(lineSensors)) return false;
+    }
+    return true;
+}
+
 } // namespace
 
 MazeNavigator::MazeNavigator(MazeMotorDriver &leftMotor, MazeMotorDriver &rightMotor,
@@ -96,6 +109,8 @@ void MazeNavigator::driveWithHeadingHold(float targetHeadingDeg, int16_t baseSpe
     _rightEncoder.reset();
     _headingPid.reset();
     unsigned long lastMicros = micros();
+    unsigned long lastWallCenterSampleMs = 0;
+    float wallCenterCorrection = 0.0f;
 
     while (true) {
         _gyro.update();
@@ -108,6 +123,26 @@ void MazeNavigator::driveWithHeadingHold(float targetHeadingDeg, int16_t baseSpe
         float dt = (micros() - lastMicros) / 1000000.0f;
         lastMicros = micros();
         float correction = _headingPid.compute(error, dt);
+
+        // Heading control stops rotation drift, but it cannot sense a lateral
+        // offset.  In a corridor, centre between two observed side walls at a
+        // deliberately low rate so ultrasonic pulse timing does not dominate
+        // the motor-control loop.
+        unsigned long nowMs = millis();
+        if (nowMs - lastWallCenterSampleMs >= WALL_CENTER_SAMPLE_INTERVAL_MS) {
+            lastWallCenterSampleMs = nowMs;
+            float leftCm = _leftUs.readDistanceCm();
+            float rightCm = _rightUs.readDistanceCm();
+            if (leftCm < US_WALL_THRESHOLD_CM && rightCm < US_WALL_THRESHOLD_CM) {
+                wallCenterCorrection = WALL_CENTER_KP * (leftCm - rightCm);
+                wallCenterCorrection = constrain(wallCenterCorrection,
+                                                 -WALL_CENTER_MAX_CORRECTION,
+                                                 WALL_CENTER_MAX_CORRECTION);
+            } else {
+                wallCenterCorrection = 0.0f;
+            }
+        }
+        correction += wallCenterCorrection;
 
         _leftMotor.setSpeed(static_cast<int16_t>(baseSpeed - correction));
         _rightMotor.setSpeed(static_cast<int16_t>(baseSpeed + correction));
@@ -152,7 +187,7 @@ bool MazeNavigator::exploreAndFindGoal(MazeMapper &maze, uint8_t startX, uint8_t
         steps++;
         senseWalls(maze, cur.x, cur.y, heading);
 
-        if (!found && isGoalDetected(lineSensors)) {
+        if (!found && isGoalConfirmed(lineSensors, isGoalDetected)) {
             outGoalX = cur.x;
             outGoalY = cur.y;
             outFinalHeading = heading;
