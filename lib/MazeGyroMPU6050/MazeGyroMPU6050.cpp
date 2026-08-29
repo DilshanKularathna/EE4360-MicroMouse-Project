@@ -38,11 +38,15 @@ bool MazeGyroMPU6050::begin() {
     writeRegister(REG_PWR_MGMT_1, 0x00);   // wake the device up
     writeRegister(REG_GYRO_CONFIG, 0x00);  // +/-250 deg/s full scale
 
-    delay(50); // let the sensor settle before calibrating
-    calibrateGyroZOffset();
-
-    _lastUpdateUs = micros();
+    calibrate();
     return true;
+}
+
+void MazeGyroMPU6050::calibrate() {
+    delay(50); // let the sensor settle before sampling its stationary bias
+    calibrateGyroZOffset();
+    resetHeading();
+    _lastUpdateUs = micros();
 }
 
 void MazeGyroMPU6050::calibrateGyroZOffset() {

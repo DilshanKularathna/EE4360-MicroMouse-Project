@@ -19,6 +19,18 @@ MazeMapper::~MazeMapper() {
     delete[] _dist;
 }
 
+void MazeMapper::clear() {
+    uint16_t n = static_cast<uint16_t>(_w) * _h;
+    for (uint16_t i = 0; i < n; i++) {
+        _walls[i] = 0;
+        _visited[i] = false;
+        _dist[i] = UNREACHABLE;
+    }
+    _goalX = 0;
+    _goalY = 0;
+    _goalSet = false;
+}
+
 bool MazeMapper::inBounds(int16_t x, int16_t y) const {
     return x >= 0 && y >= 0 && x < _w && y < _h;
 }
@@ -46,6 +58,16 @@ void MazeMapper::setWall(uint8_t x, uint8_t y, WallDir dir, bool present) {
 bool MazeMapper::hasWall(uint8_t x, uint8_t y, WallDir dir) const {
     if (!inBounds(x, y)) return true; // treat out-of-bounds as walled off
     return (_walls[idx(x, y)] & dir) != 0;
+}
+
+uint8_t MazeMapper::getWallMask(uint8_t x, uint8_t y) const {
+    if (!inBounds(x, y)) return WALL_NORTH | WALL_EAST | WALL_SOUTH | WALL_WEST;
+    return _walls[idx(x, y)];
+}
+
+void MazeMapper::setWallMask(uint8_t x, uint8_t y, uint8_t mask) {
+    if (!inBounds(x, y)) return;
+    _walls[idx(x, y)] = mask & (WALL_NORTH | WALL_EAST | WALL_SOUTH | WALL_WEST);
 }
 
 void MazeMapper::markVisited(uint8_t x, uint8_t y) {

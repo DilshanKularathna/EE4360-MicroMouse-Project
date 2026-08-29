@@ -47,6 +47,15 @@ enum class RobotState : uint8_t {
     ERROR
 };
 
+// The two operational modes needed during the three permitted competition
+// attempts.  The choice is made automatically from the validity of the map
+// stored in EEPROM: first attempt explores, later attempts execute the
+// learned route.
+enum class RunMode : uint8_t {
+    EXPLORE,
+    SPEED_RUN
+};
+
 // ---------------------------------------------------------------------------
 // Small, pure direction-math helpers shared by MazeMapper and Navigator.
 // Keeping these inline+header-only avoids a pointless extra .cpp/.o for a

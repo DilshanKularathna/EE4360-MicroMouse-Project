@@ -3,7 +3,15 @@
 // MazeRobotFSM
 //
 // Top-level orchestrator. Owns the two MazeMapper instances (Section A 4x4,
-// Section B 9x9) and drives the mission phases described in the brief:
+// Section B 9x9) and drives the mission phases described in the brief.
+//
+// With a blank EEPROM it fully explores each section, backtracks to its
+// section start, drives its learned shortest path, and saves the completed
+// map pair at FINISH.  After a reset before a later trial, it restores that
+// map pair and immediately executes the known START-to-FINISH route.  No
+// source upload or external maze information is needed between attempts.
+//
+// Exploration sequence:
 //
 //   1. Explore Section A, detecting the bridge-approach marker as the goal.
 //   2. Re-run Section A via the shortest known path (path optimization).
@@ -24,6 +32,7 @@
 #include "MazeNavigator.h"
 #include "MazeBridgeHandler.h"
 #include "MazeLineSensorArray.h"
+#include "MazePersistentStore.h"
 
 class MazeRobotFSM {
 public:
@@ -45,8 +54,12 @@ private:
 
     MazeMapper _mazeA;
     MazeMapper _mazeB;
+    MazePersistentStore _store;
 
     RobotState _state;
+    RunMode _mode;
+    uint8_t _goalAX, _goalAY;
+    uint8_t _goalBX, _goalBY;
 
     // TODO: set these from the officials' on-the-day announcement of the
     // bridge corner / start orientation. (0,0) with a NORTH start heading
@@ -64,4 +77,8 @@ private:
     static const Heading START_B_HEADING = Heading::NORTH;
 
     void setState(RobotState s) { _state = s; }
+    void clearSavedMapOnLongBootPress();
+    void waitForOfficialStart();
+    void exploreCourse();
+    void runSavedCourse();
 };

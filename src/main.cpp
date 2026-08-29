@@ -68,8 +68,9 @@ void setup() {
 void loop() {
     robot.run();
 
-    // run() only returns once (FINISHED or ERROR). Reflect the outcome on
-    // the status LED; power-cycle or reset the Mega to attempt a new run.
+    // A completed exploration is saved to EEPROM.  Reset/power-cycle before
+    // the next official attempt: setup() recalibrates the stationary gyro,
+    // then RobotFSM restores the saved map and runs the shortest route.
     bool ok = (robot.getState() == RobotState::FINISHED);
     while (true) {
         digitalWrite(STATUS_LED_PIN, HIGH);

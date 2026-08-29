@@ -74,6 +74,11 @@ static const uint8_t LINE_SENSOR_PINS[LINE_SENSOR_COUNT] = {A8, A9, A10, A11, A1
 #define START_BUTTON_PIN   38   // officials press this (or your own switch) to start timing
 #define STATUS_LED_PIN     13
 
+// Hold the existing start button while booting for this long to erase an old
+// learned maze before a *new* arena is used.  A normal official start press
+// is much shorter and never clears the map.
+#define CLEAR_SAVED_MAP_HOLD_MS  2500UL
+
 // ---------------------------------------------------------------------------
 // Maze / arena geometry (from the project brief)
 // ---------------------------------------------------------------------------

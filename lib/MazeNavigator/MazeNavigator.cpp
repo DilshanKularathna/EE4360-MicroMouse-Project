@@ -66,6 +66,10 @@ void MazeNavigator::stopMotors() {
     _rightMotor.stop();
 }
 
+void MazeNavigator::setHeadingReference(Heading heading) {
+    _gyro.resetHeading(headingToAngleDeg(heading));
+}
+
 void MazeNavigator::turnToHeading(Heading target) {
     float targetDeg = headingToAngleDeg(target);
     _headingPid.reset();
@@ -148,12 +152,14 @@ bool MazeNavigator::exploreAndFindGoal(MazeMapper &maze, uint8_t startX, uint8_t
         steps++;
         senseWalls(maze, cur.x, cur.y, heading);
 
-        if (isGoalDetected(lineSensors)) {
+        if (!found && isGoalDetected(lineSensors)) {
             outGoalX = cur.x;
             outGoalY = cur.y;
             outFinalHeading = heading;
             found = true;
-            break;
+            // Do not stop here.  A shortest path is only trustworthy after
+            // all reachable cells have been sensed, and DFS will naturally
+            // backtrack the robot to the physical start cell when complete.
         }
 
         Heading nextDir;

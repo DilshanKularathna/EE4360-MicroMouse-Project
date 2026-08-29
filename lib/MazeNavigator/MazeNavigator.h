@@ -49,6 +49,10 @@ public:
     void begin();
     void stopMotors();
 
+    // Establish the map-frame heading at a known orientation (the robot is
+    // stationary on the START tile, or just after the known bridge corridor).
+    void setHeadingReference(Heading heading);
+
     // --- Low-level movement primitives ---------------------------------
     // Rotates in place to face `target`, using the gyro for closed-loop
     // heading control. Updates the internally tracked heading.
@@ -63,10 +67,11 @@ public:
     void senseWalls(MazeMapper &maze, uint8_t x, uint8_t y, Heading heading);
 
     // --- High-level behaviors --------------------------------------------
-    // Explores `maze` outward from (startX, startY) with a depth-first
-    // search that backtracks at dead ends, stopping as soon as
-    // isGoalDetected() returns true. On success, returns true and writes
-    // the final (goal) cell/heading into the out-parameters.
+    // Explores every reachable cell in `maze` using depth-first search.  It
+    // records the first cell for which isGoalDetected() returns true, then
+    // continues exploring and backtracks to the physical start cell.  That
+    // gives flood-fill a complete map and makes the following shortest-path
+    // drive physically valid.  Returns true if the goal was found.
     bool exploreAndFindGoal(MazeMapper &maze, uint8_t startX, uint8_t startY, Heading startHeading,
                              MazeLineSensorArray &lineSensors, GoalDetectorFn isGoalDetected,
                              uint8_t &outGoalX, uint8_t &outGoalY, Heading &outFinalHeading);

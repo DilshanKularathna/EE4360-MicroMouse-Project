@@ -22,6 +22,11 @@ public:
     // Returns false if the device did not ACK on the I2C bus (check wiring).
     bool begin();
 
+    // Re-measure the stationary gyro bias without reinitialising the I2C
+    // peripheral.  Call only before an attempt, while the robot is still on
+    // the START tile.
+    void calibrate();
+
     // Call as often as possible (every main loop iteration). Integrates
     // gyro Z (yaw rate) over the elapsed time to update the heading
     // estimate in degrees.

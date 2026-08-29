@@ -12,6 +12,12 @@
 #include <unity.h>
 #include "MazeMapper.h"
 
+// Unity calls these before/after every single test case. We don't need
+// any shared per-test setup/teardown, but Unity requires both symbols to
+// exist -- omitting them is a link error ("undefined reference to setUp").
+void setUp(void) {}
+void tearDown(void) {}
+
 void test_open_grid_manhattan_distance() {
     // A 4x4 maze with no walls at all: distance to the goal should just be
     // Manhattan distance.
@@ -67,6 +73,23 @@ void test_unreachable_cell_reports_unreachable() {
     TEST_ASSERT_EQUAL_UINT16(MazeMapper::UNREACHABLE, maze.getDistance(0, 0));
 }
 
+void test_wall_masks_can_be_restored_for_a_saved_route() {
+    MazeMapper original(3, 2);
+    original.setWall(0, 0, WALL_EAST, true);
+    original.setWall(1, 1, WALL_NORTH, true);
+
+    MazeMapper restored(3, 2);
+    for (uint8_t y = 0; y < original.height(); y++) {
+        for (uint8_t x = 0; x < original.width(); x++) {
+            restored.setWallMask(x, y, original.getWallMask(x, y));
+        }
+    }
+
+    TEST_ASSERT_TRUE(restored.hasWall(0, 0, WALL_EAST));
+    TEST_ASSERT_TRUE(restored.hasWall(1, 0, WALL_WEST));
+    TEST_ASSERT_TRUE(restored.hasWall(1, 1, WALL_NORTH));
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -75,5 +98,6 @@ int main(int argc, char **argv) {
     RUN_TEST(test_wall_forces_detour);
     RUN_TEST(test_best_heading_moves_closer);
     RUN_TEST(test_unreachable_cell_reports_unreachable);
+    RUN_TEST(test_wall_masks_can_be_restored_for_a_saved_route);
     return UNITY_END();
 }

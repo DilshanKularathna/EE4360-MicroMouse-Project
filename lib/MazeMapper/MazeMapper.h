@@ -33,6 +33,15 @@ public:
     void setWall(uint8_t x, uint8_t y, WallDir dir, bool present);
     bool hasWall(uint8_t x, uint8_t y, WallDir dir) const;
 
+    // Raw per-cell wall masks are deliberately exposed for persistence.  A
+    // complete map is written to EEPROM after a successful exploration and
+    // restored before a later speed-run attempt.  setWallMask() does not
+    // mirror the value: the saved image already contains both sides of every
+    // interior wall exactly as observed.
+    uint8_t getWallMask(uint8_t x, uint8_t y) const;
+    void setWallMask(uint8_t x, uint8_t y, uint8_t mask);
+    void clear();
+
     void markVisited(uint8_t x, uint8_t y);
     bool isVisited(uint8_t x, uint8_t y) const;
 
