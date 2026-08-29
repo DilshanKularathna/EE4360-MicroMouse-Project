@@ -1,7 +1,0 @@
-{
-  "name": "MazeMapper",
-  "version": "0.1.0",
-  "description": "Pure flood-fill shortest-path algorithm. No Arduino dependency - unit testable on native platform.",
-  "frameworks": "arduino",
-  "platforms": "atmelavr"
-}

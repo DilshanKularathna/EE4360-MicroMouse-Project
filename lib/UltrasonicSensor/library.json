@@ -1,7 +1,0 @@
-{
-  "name": "UltrasonicSensor",
-  "version": "0.1.0",
-  "description": "HC-SR04 style wall ranging for maze wall detection.",
-  "frameworks": "arduino",
-  "platforms": "atmelavr"
-}

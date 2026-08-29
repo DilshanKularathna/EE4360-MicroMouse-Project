@@ -1,7 +1,0 @@
-{
-  "name": "GyroMPU6050",
-  "version": "0.1.0",
-  "description": "Register-level I2C driver for MPU-6050 6DOF gyro/accelerometer (no external lib dependency).",
-  "frameworks": "arduino",
-  "platforms": "atmelavr"
-}

@@ -79,4 +79,4 @@ of each encoder must stay on one of those.
 6. Tune `LINE_KP/KI/KD` on the actual bridge for smooth line tracking
    through its turns.
 7. On competition day, set the announced bridge corner / start orientation
-   in `lib/RobotFSM/RobotFSM.h` (`START_A_*`, `START_B_*`).
+   in `lib/MazeRobotFSM/MazeRobotFSM.h` (`START_A_*`, `START_B_*`).

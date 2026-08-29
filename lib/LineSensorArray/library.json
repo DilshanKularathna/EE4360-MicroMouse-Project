@@ -1,7 +1,0 @@
-{
-  "name": "LineSensorArray",
-  "version": "0.1.0",
-  "description": "8-channel IR sensor array: line-following error + floor-pattern (start/finish/marker) detection.",
-  "frameworks": "arduino",
-  "platforms": "atmelavr"
-}

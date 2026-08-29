@@ -2,7 +2,7 @@
 // main.cpp
 //
 // Composition root only: construct every module, wire them together, hand
-// off to RobotFSM. No maze-solving or control logic lives here on purpose
+// off to MazeRobotFSM. No maze-solving or control logic lives here on purpose
 // -- that keeps this file short and makes every subsystem independently
 // reusable/testable (see lib/*, and test/test_maze_mapper for an example
 // of testing MazeMapper without any hardware at all).
@@ -11,34 +11,34 @@
 #include <Arduino.h>
 #include "config.h"
 
-#include "MotorDriver.h"
-#include "Encoder.h"
-#include "UltrasonicSensor.h"
-#include "LineSensorArray.h"
-#include "GyroMPU6050.h"
-#include "Navigator.h"
-#include "BridgeHandler.h"
-#include "RobotFSM.h"
+#include "MazeMotorDriver.h"
+#include "MazeEncoder.h"
+#include "MazeUltrasonicSensor.h"
+#include "MazeLineSensorArray.h"
+#include "MazeGyroMPU6050.h"
+#include "MazeNavigator.h"
+#include "MazeBridgeHandler.h"
+#include "MazeRobotFSM.h"
 
 // --- Actuators ---------------------------------------------------------
-MotorDriver leftMotor(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_L_PWM);
-MotorDriver rightMotor(MOTOR_R_IN1, MOTOR_R_IN2, MOTOR_R_PWM);
+MazeMotorDriver leftMotor(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_L_PWM);
+MazeMotorDriver rightMotor(MOTOR_R_IN1, MOTOR_R_IN2, MOTOR_R_PWM);
 
 // --- Sensors -------------------------------------------------------------
-Encoder leftEncoder(ENCODER_L_A, ENCODER_L_B);
-Encoder rightEncoder(ENCODER_R_A, ENCODER_R_B);
+MazeEncoder leftEncoder(ENCODER_L_A, ENCODER_L_B);
+MazeEncoder rightEncoder(ENCODER_R_A, ENCODER_R_B);
 
-UltrasonicSensor frontUs(US_FRONT_TRIG, US_FRONT_ECHO, US_MAX_RANGE_CM);
-UltrasonicSensor leftUs(US_LEFT_TRIG, US_LEFT_ECHO, US_MAX_RANGE_CM);
-UltrasonicSensor rightUs(US_RIGHT_TRIG, US_RIGHT_ECHO, US_MAX_RANGE_CM);
+MazeUltrasonicSensor frontUs(US_FRONT_TRIG, US_FRONT_ECHO, US_MAX_RANGE_CM);
+MazeUltrasonicSensor leftUs(US_LEFT_TRIG, US_LEFT_ECHO, US_MAX_RANGE_CM);
+MazeUltrasonicSensor rightUs(US_RIGHT_TRIG, US_RIGHT_ECHO, US_MAX_RANGE_CM);
 
-LineSensorArray lineSensors;
-GyroMPU6050 gyro;
+MazeLineSensorArray lineSensors;
+MazeGyroMPU6050 gyro;
 
 // --- Behavior layers -----------------------------------------------------
-Navigator navigator(leftMotor, rightMotor, leftEncoder, rightEncoder, frontUs, leftUs, rightUs, gyro);
-BridgeHandler bridge(leftMotor, rightMotor, lineSensors);
-RobotFSM robot(navigator, bridge, lineSensors);
+MazeNavigator navigator(leftMotor, rightMotor, leftEncoder, rightEncoder, frontUs, leftUs, rightUs, gyro);
+MazeBridgeHandler bridge(leftMotor, rightMotor, lineSensors);
+MazeRobotFSM robot(navigator, bridge, lineSensors);
 
 void setup() {
     Serial.begin(115200);

@@ -1,7 +1,0 @@
-{
-  "name": "Encoder",
-  "version": "0.1.0",
-  "description": "Quadrature pulse counting via interrupts for wheel odometry.",
-  "frameworks": "arduino",
-  "platforms": "atmelavr"
-}

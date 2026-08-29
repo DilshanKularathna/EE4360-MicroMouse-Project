@@ -1,7 +1,0 @@
-{
-  "name": "PIDController",
-  "version": "0.1.0",
-  "description": "Generic PID controller reused for both heading-hold and line-following.",
-  "frameworks": "arduino",
-  "platforms": "atmelavr"
-}

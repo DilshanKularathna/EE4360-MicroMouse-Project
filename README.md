@@ -27,29 +27,44 @@ gyro). None of them know anything about mazes, states, or strategy. That
 split matters for three reasons that map directly onto how this project
 gets graded and defended:
 
-1. **Readability.** Opening `lib/MotorDriver/MotorDriver.cpp` tells you
-   everything about driving one motor and nothing else. You never have to
-   read encoder or maze-solving logic to understand motor control.
-2. **Reusability.** `MazeMapper` and `Navigator` don't hard-code "Section A"
-   or "Section B" anywhere — they take a maze and a starting position as
-   parameters. The exact same code explores and speed-runs both sections;
-   only the constants passed in from `RobotFSM` differ. If a future year's
-   challenge changes the grid to 6×6, nothing in `lib/` needs to change.
+1. **Readability.** Opening `lib/MazeMotorDriver/MazeMotorDriver.cpp` tells
+   you everything about driving one motor and nothing else. You never have
+   to read encoder or maze-solving logic to understand motor control.
+2. **Reusability.** `MazeMapper` and `MazeNavigator` don't hard-code
+   "Section A" or "Section B" anywhere — they take a maze and a starting
+   position as parameters. The exact same code explores and speed-runs
+   both sections; only the constants passed in from `MazeRobotFSM` differ.
+   If a future year's challenge changes the grid to 6×6, nothing in `lib/`
+   needs to change.
 3. **Viva readiness.** The brief specifically asks each student to explain
    *why* the code is structured the way it is, and to answer hardware
    questions tied to specific modules. A clean module boundary makes both
    much easier to defend, and makes it obvious (and provable via git
    blame/commit history) who wrote which subsystem.
 
+### Naming convention: why everything is prefixed "Maze"
+
+If you point `lib_extra_dirs` in `platformio.ini` at a shared Arduino
+libraries folder (e.g. `Documents/Arduino/libraries`) to reuse libraries
+from other projects without reinstalling them, that folder becomes visible
+to this project too. Generic names like `Encoder`, `MotorDriver`, or
+`Navigator` are common enough that another project's library of the same
+name can silently shadow ours and get linked in instead — with no error,
+just wrong behavior (or, worse, a real compile error from an incompatible
+library, which is exactly what happens if a different-architecture
+`Encoder` library ends up on an AVR build). Every library in `lib/` here
+is therefore prefixed `Maze` (`MazeMotorDriver`, `MazeEncoder`, ...) so it
+can never collide with anything else you might have installed globally.
+
 ### Layer summary
 
 | Layer | Location | Knows about hardware? | Knows about the maze? |
 |---|---|---|---|
-| Drivers | `lib/MotorDriver`, `lib/Encoder`, `lib/UltrasonicSensor`, `lib/LineSensorArray`, `lib/GyroMPU6050` | Yes (one pin/sensor each) | No |
-| Control | `lib/PIDController` | No | No |
+| Drivers | `lib/MazeMotorDriver`, `lib/MazeEncoder`, `lib/MazeUltrasonicSensor`, `lib/MazeLineSensorArray`, `lib/MazeGyroMPU6050` | Yes (one pin/sensor each) | No |
+| Control | `lib/MazePIDController` | No | No |
 | Algorithm | `lib/MazeMapper` | No | Yes (walls, flood-fill) |
-| Behavior | `lib/Navigator`, `lib/BridgeHandler` | Yes (via driver references) | Yes (via `MazeMapper&`) |
-| Orchestration | `lib/RobotFSM` | No (delegates) | No (delegates) |
+| Behavior | `lib/MazeNavigator`, `lib/MazeBridgeHandler` | Yes (via driver references) | Yes (via `MazeMapper&`) |
+| Orchestration | `lib/MazeRobotFSM` | No (delegates) | No (delegates) |
 | Composition | `src/main.cpp` | Wires everything together | — |
 
 `MazeMapper` is deliberately the *only* file with zero Arduino dependency
@@ -89,7 +104,7 @@ additionally checked against hand-computed expected results):
 - Tune `HEADING_KP/KI/KD` and `LINE_KP/KI/KD` on the actual field —
   starting values in `config.h` are reasonable defaults, not measured ones.
 - Set `START_A_X/Y`, `START_B_X/Y`, and their headings in
-  `lib/RobotFSM/RobotFSM.h` once the officials announce the bridge corner
+  `lib/MazeRobotFSM/MazeRobotFSM.h` once the officials announce the bridge corner
   and orientation on competition day.
 - `LineSensorArray::detectApproachMarker()` uses a simple center-vs-outer
   heuristic — verify it against the real marker tile at your approach

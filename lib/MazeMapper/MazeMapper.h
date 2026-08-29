@@ -9,7 +9,7 @@
 //
 // Intentionally hardware-free (no Arduino.h) so it can be unit tested on a
 // host PC with `pio test -e native`. All robot movement/sensing lives in
-// the Navigator class instead.
+// the MazeNavigator class instead.
 // ============================================================================
 
 #include "RobotTypes.h"
